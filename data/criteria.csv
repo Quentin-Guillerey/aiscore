@@ -1,0 +1,65 @@
+criterion_id,criterion_name,category,weight,applicable_channels,automation_method,expected_behavior_chat,expected_behavior_voice,unacceptable_behavior_chat,unacceptable_behavior_voice
+1.1,Greeting,FCR / Professionalism / Communication Skills,0.05,chat|voice,rule,"1) Opened with a greeting and identified themselves.
+2) Confirmed the customer's identity using the fields the queue requires.
+3) Where an earlier interaction already confirmed identity, did not repeat the full check.","1) Opened with a greeting and identified themselves and the team.
+2) Confirmed the customer's identity using the fields the queue requires.
+3) Acknowledged the reason for the contact before moving on.","Did not confirm identity before handling account-specific requests, or requested information the queue does not require.",Began handling the request without a greeting or without confirming who they were speaking to.
+1.2,Advocacy,FCR / Professionalism / Communication Skills,0.1,chat|voice,model,"1) Acknowledged the customer's situation before moving to a solution.
+2) Stated what they would do next on the customer's behalf.
+3) Took ownership rather than describing the problem as another team's.","1) Acknowledged the customer's situation before moving to a solution.
+2) Stated what they would do next on the customer's behalf.
+3) Took ownership rather than describing the problem as another team's.","Moved straight to process without acknowledging the customer's position, or framed the issue as outside their responsibility.","Moved straight to process without acknowledging the customer's position, or framed the issue as outside their responsibility."
+1.3,Professionalism / Personalization,FCR / Professionalism / Communication Skills,0.05,chat|voice,model,"1) Kept a respectful register throughout, including under pressure.
+2) Referred to the customer's specific situation rather than generic phrasing.
+3) Kept internal frustrations out of the interaction.","1) Kept a respectful register throughout, including under pressure.
+2) Referred to the customer's specific situation rather than generic phrasing.
+3) Kept internal frustrations out of the interaction.","Language implying irritation, sarcasm or dismissal, or responses so generic they ignore what the customer described.","Tone implying irritation, sarcasm or dismissal, or responses so generic they ignore what the customer described."
+1.4,Communication / Courtesy / Confidence,FCR / Professionalism / Communication Skills,0.1,chat|voice,model,"1) Adapted register to the customer rather than using one fixed style.
+2) Explained in plain language, without internal shorthand.
+3) Gave clear, decisive answers rather than hedged ones.","1) Adapted register to the customer rather than using one fixed style.
+2) Explained in plain language, without internal shorthand.
+3) Gave clear, decisive answers rather than hedged ones.","Used internal jargon or system names the customer would not recognise, or gave answers so tentative the customer could not act on them.","Used internal jargon or system names the customer would not recognise, or gave answers so tentative the customer could not act on them."
+1.5,Chat grammar,FCR / Professionalism / Communication Skills,0.05,chat,rule,"1) Messages are readable and correctly punctuated.
+2) Sentences are complete rather than fragments.
+3) Minor typos are acceptable where meaning is unaffected.",,"Errors dense enough to obscure meaning, or messages the customer has to ask about again.",
+1.6,Response Timeliness,FCR / Professionalism / Communication Skills,0.1,chat|voice,rule,"1) Replied within the team's stated response window.
+2) Where research was needed, said so and gave an expected wait.
+3) Did not ask the customer to repeat information already provided.","1) Kept silences short and signposted them.
+2) Where research was needed, said so and gave an expected wait.
+3) Did not ask the customer to repeat information already provided.","Silence beyond the stated window with no holding message, or asking for details the customer already gave.","Extended dead air with no explanation, or asking for details the customer already gave."
+1.7,Closing,FCR / Professionalism / Communication Skills,0.05,chat|voice,rule,"1) Summarised what was done and what happens next.
+2) Confirmed nothing else was outstanding.
+3) Closed politely and left the contact route clear.","1) Summarised what was done and what happens next.
+2) Confirmed nothing else was outstanding.
+3) Closed politely and left the contact route clear.","Ended without summarising the outcome, or closed while the customer still had an open question.","Ended without summarising the outcome, or closed while the customer still had an open question."
+2.1,Asking relevant questions / Probing,Issue Resolution / Quality & Accuracy,0.05,chat|voice,model,"1) Asked enough to establish what the customer actually needs.
+2) Questions followed from what the customer had already said.
+3) Checked details that change the answer before committing to one.","1) Asked enough to establish what the customer actually needs.
+2) Questions followed from what the customer had already said.
+3) Checked details that change the answer before committing to one.","Proceeded without establishing the need, or asked questions the known facts already ruled out.","Proceeded without establishing the need, or asked questions the known facts already ruled out."
+2.2,Troubleshooting & Scope of Support,Issue Resolution / Quality & Accuracy,0.05,chat|voice,model,"1) Followed the documented steps for the issue in order.
+2) Consulted the knowledge base before escalating or referring.
+3) Stayed within what the team is authorised to handle.","1) Followed the documented steps for the issue in order.
+2) Consulted the knowledge base before escalating or referring.
+3) Stayed within what the team is authorised to handle.","Skipped documented steps, offered guidance outside the team's remit, or referred the customer on without attempting the supported path.","Skipped documented steps, offered guidance outside the team's remit, or referred the customer on without attempting the supported path."
+2.3,Resolution,Issue Resolution / Quality & Accuracy,0.15,chat|voice,model,"1) Information given was accurate and complete.
+2) Steps were specific enough for the customer to follow unaided.
+3) Resolved within the interaction where the team is able to.","1) Information given was accurate and complete.
+2) Steps were specific enough for the customer to follow unaided.
+3) Resolved within the interaction where the team is able to.","Incorrect, partial or vague information, or an unresolved issue closed without a follow-up route.","Incorrect, partial or vague information, or an unresolved issue closed without a follow-up route."
+2.4,Set proper expectations,Issue Resolution / Quality & Accuracy,0.1,chat|voice,model,"1) Stated what happens next and who does it.
+2) Quoted timeframes from published guidance, not estimates.
+3) Was clear about what had not been agreed.","1) Stated what happens next and who does it.
+2) Quoted timeframes from published guidance, not estimates.
+3) Was clear about what had not been agreed.","Left the next step unstated, invented a timeframe, or implied an outcome that had not been approved.","Left the next step unstated, invented a timeframe, or implied an outcome that had not been approved."
+2.5,Offered further assistance and self-help information,Issue Resolution / Quality & Accuracy,0.05,chat|voice,rule,"1) Asked whether anything else was needed before closing.
+2) Pointed to the relevant self-service route where one exists.","1) Asked whether anything else was needed before closing.
+2) Pointed to the relevant self-service route where one exists.","Closed without checking for other needs, or withheld a self-service route that would have helped.","Closed without checking for other needs, or withheld a self-service route that would have helped."
+2.6,Reference numbers,Issue Resolution / Quality & Accuracy,0.05,chat|voice,rule,"1) Gave the customer the reference for the record created or updated.
+2) Confirmed the customer had captured it.","1) Gave the customer the reference for the record created or updated.
+2) Confirmed the customer had captured it.","Did not provide a reference where a record existed, or gave one that does not match the record.","Did not provide a reference where a record existed, or gave one that does not match the record."
+2.7,Documentation,Issue Resolution / Quality & Accuracy,0.05,chat|voice,rule,"1) Notes state the issue, the action taken and the outcome.
+2) Notes are specific enough for the next reader to continue without contacting the customer.
+3) Supporting evidence is attached where the process requires it.","1) Notes state the issue, the action taken and the outcome.
+2) Notes are specific enough for the next reader to continue without contacting the customer.
+3) Supporting evidence is attached where the process requires it.","Notes missing, too sparse to act on, or omitting evidence the process requires.","Notes missing, too sparse to act on, or omitting evidence the process requires."

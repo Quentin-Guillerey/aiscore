@@ -1,0 +1,38 @@
+rcm_category,override_type,channel,violation_id,violation_text
+Fraud,auto_zero,chat,V1,Action taken during the interaction that produces a personal benefit for the agent.
+Fraud,auto_zero,voice,V1,Action taken during the interaction that produces a personal benefit for the agent.
+Unprofessional_Behavior,auto_zero,chat,V1,Offensive or abusive language directed at the customer.
+Unprofessional_Behavior,auto_zero,chat,V2,Offensive language recorded in the notes on the record.
+Unprofessional_Behavior,auto_zero,chat,V3,"Disparaging the employer, the client or a colleague to the customer."
+Unprofessional_Behavior,auto_zero,chat,V4,Language targeting a protected characteristic.
+Unprofessional_Behavior,auto_zero,chat,V5,Argues with the customer or refuses a reasonable request without cause.
+Unprofessional_Behavior,auto_zero,voice,V1,Offensive or abusive language directed at the customer.
+Unprofessional_Behavior,auto_zero,voice,V2,Offensive language recorded in the notes on the record.
+Unprofessional_Behavior,auto_zero,voice,V3,"Disparaging the employer, the client or a colleague to the customer."
+Unprofessional_Behavior,auto_zero,voice,V4,Language targeting a protected characteristic.
+Unprofessional_Behavior,auto_zero,voice,V5,Argues with the customer or refuses a reasonable request without cause.
+Chat_Avoidance,auto_zero,chat,V1,Ends the conversation without a valid reason and without notifying a supervisor.
+Chat_Avoidance,auto_zero,chat,V2,Leaves the conversation unattended until it times out.
+Chat_Avoidance,auto_zero,chat,V3,Transfers or reassigns a conversation solely to avoid handling it.
+Call_Avoidance,auto_zero,voice,V1,Places the call in a non-talking state before greeting the customer.
+Call_Avoidance,auto_zero,voice,V2,Disconnects the call without a valid reason.
+Call_Avoidance,auto_zero,voice,V3,Leaves the call silent until the customer disconnects.
+Call_Avoidance,auto_zero,voice,V4,Transfers the call solely to avoid handling it.
+Call_Avoidance,auto_zero,voice,V5,"Uses a status or state that prevents calls being delivered, without authorisation."
+PCI_Compliance,partial_fail,chat,V1,Requests or accepts payment card details through a channel not approved for card capture.
+PCI_Compliance,partial_fail,voice,V1,Fails to suspend recording before payment card details are given.
+PCI_Compliance,partial_fail,voice,V2,Does not report a failure to suspend recording to a supervisor at the time it occurs.
+PCI_Compliance,partial_fail,voice,V3,Retains a copy of the customer's payment card or billing details.
+Documentation,partial_fail,chat,V1,No notes recorded against the interaction.
+Documentation,partial_fail,chat,V2,Notes record an action that did not take place.
+Documentation,partial_fail,voice,V1,No notes recorded against the interaction.
+Documentation,partial_fail,voice,V2,Notes record an action that did not take place.
+Call_Recording,partial_fail,voice,V1,Does not restore recording after a permitted pause.
+Communication,partial_fail,voice,V1,Goes unavailable or logs out without authorisation.
+Communication,partial_fail,voice,V2,Handles customer contact through a channel not approved for it.
+Negligence,partial_fail,chat,V1,Issues a credit or goodwill adjustment beyond their approval authority.
+Negligence,partial_fail,chat,V2,Commits to a callback or follow-up that is not then carried out.
+Negligence,partial_fail,chat,V3,Commits the company to an outcome that has not been approved.
+Negligence,partial_fail,voice,V1,Issues a credit or goodwill adjustment beyond their approval authority.
+Negligence,partial_fail,voice,V2,Commits to a callback or follow-up that is not then carried out.
+Negligence,partial_fail,voice,V3,Commits the company to an outcome that has not been approved.
