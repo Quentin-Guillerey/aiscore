@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AISCORE scorecard v2",
+  "description": "Two independent axes. Criteria are weighted and scored per interaction. RCM violations are a separate, interaction-level flag that overrides the weighted score entirely. A criterion never carries an RCM category.",
+
+  "definitions": {
+
+    "criterion": {
+      "type": "object",
+      "required": ["criterion_id", "criterion_name", "category", "weight", "applicable_channels"],
+      "properties": {
+        "criterion_id": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+        "criterion_name": { "type": "string" },
+        "category": { "type": "string", "description": "Rollup grouping. Display only - it carries no weight of its own; criterion weights already sum to 1.0 across the whole scorecard." },
+        "weight": { "type": "number", "exclusiveMinimum": 0, "maximum": 1, "description": "Decimal fraction. All criterion weights must sum to exactly 1.0." },
+        "applicable_channels": {
+          "type": "array",
+          "items": { "enum": ["chat", "voice"] },
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Derive by scanning the FULL behavior text for channel section markers, not the first line. Three criteria in the source rubric open with a 'CHAT' header but contain a later 'VOICE' section, and one carries no marker at all."
+        },
+        "expected_behavior_raw": {
+          "type": ["string", "null"],
+          "description": "Full source text, not yet split by channel. A clean automatic chat/voice split was attempted and rejected: the source text uses inconsistent headers (plain 'VOICE', 'VOICE - OUTBOUND'/'VOICE - INBOUND', or no marker at all), and a wrong automatic split would silently misattribute behavior to the wrong channel, which is worse than not splitting it. Splitting into per-channel fields is deferred to a manual pass, not automated."
+        },
+        "unacceptable_behavior_raw": { "type": ["string", "null"] },
+        "automation_method": {
+          "type": ["string", "null"],
+          "enum": [null, "rule", "model", "not_automatable"],
+          "description": "Not in the source rubric. Set per the classifier-discipline rule before wiring this criterion into scoring. 'not_automatable' is a valid and expected answer."
+        }
+      }
+    },
+
+    "rcm_category": {
+      "type": "object",
+      "required": ["name", "override_type", "violations"],
+      "properties": {
+        "name": {
+          "enum": ["Fraud", "PCI_Compliance", "Unprofessional_Behavior", "Documentation",
+                   "Chat_Avoidance", "Call_Recording", "Communication", "Negligence",
+                   "Call_Avoidance"]
+        },
+        "override_type": {
+          "enum": ["auto_zero", "partial_fail", null],
+          "description": "Defined per CATEGORY, not per criterion. Sourced from the 'Scoring reference' sheet. Null means the source rubric never assigned one - see open_questions."
+        },
+        "violations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["violation_id", "channel", "text"],
+            "properties": {
+              "violation_id": { "type": "string", "pattern": "^V[0-9]+$" },
+              "channel": { "enum": ["chat", "voice"] },
+              "text": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "type": "object",
+  "required": ["scorecard_version", "criteria", "rcm_categories", "scoring_rules"],
+  "properties": {
+
+    "scorecard_version": {
+      "type": "string",
+      "description": "Recorded on every score row so historical scores stay interpretable after a rubric change."
+    },
+
+    "criteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/criterion" }
+    },
+
+    "rcm_categories": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/rcm_category" }
+    },
+
+    "scoring_rules": {
+      "type": "object",
+      "required": ["ratings", "base_score", "override_precedence"],
+      "properties": {
+
+        "ratings": {
+          "type": "object",
+          "properties": {
+            "meets_expectations": { "credit": 1.0 },
+            "partially_meets":    { "credit": 0.6 },
+            "did_not_meet":       { "credit": 0.0 },
+            "na":                 { "credit": null }
+          },
+          "description": "'na' excludes the criterion from BOTH numerator and denominator. The 0.6 fraction is the source rubric's partial-credit multiplier; it was absent from v1 of this schema, which made the score uncomputable."
+        },
+
+        "partially_meets_gate": {
+          "condition": "channel_transition == 'chat_to_outbound_call'",
+          "note": "Policy gate on when the rating may be SELECTED. It is not a per-criterion band available by default. The 0.6 credit above is applied per criterion once the gate is satisfied."
+        },
+
+        "base_score": {
+          "formula": "sum(weight * credit for applicable, non-NA criteria) / sum(weight for applicable, non-NA criteria)",
+          "returns": "number in [0,1]"
+        },
+
+        "override_precedence": {
+          "order": ["auto_zero", "partial_fail", "base_score"],
+          "auto_zero":    { "result": 0.0 },
+          "partial_fail": {
+            "result": "min(0.5, base_score)",
+            "note": "Where the calculated score falls below 50%, the lower score stands. A hardcoded 50% cap is the common spreadsheet implementation and would raise a worse score; it is deliberately not used here."
+          },
+          "note": "Exactly one RCM flag is raised per interaction, at interaction level. It is not attached to any criterion."
+        },
+
+        "category_exceptions": [
+          {
+            "rcm_category": "Negligence",
+            "condition": "goodwill_value >= GOODWILL_AUTOZERO_LIMIT && !approved",
+            "override_type": "auto_zero",
+            "note": "Promotes Negligence from partial_fail to auto_zero. The only value-dependent rule in the rubric. Not auto-evaluated in v1; flag for human confirmation."
+          }
+        ],
+
+        "goal_score": 0.85
+      }
+    },
+
+    "open_questions": {
+      "type": "array",
+      "const": [
+        "RESOLVED 2026-07-31: Call_Avoidance set to auto_zero (parallels Chat_Avoidance; deliberate avoidance behaviors, not borderline judgment). Sourced from rcm_violations.csv, which is the single source of truth - scoring_engine.py derives its RCM override map from that file at load time rather than hardcoding a copy, so this can't silently drift out of sync again.",
+        "RESOLVED: automation_method is now filled in for all 14 criteria in criteria.csv (rule/model per criterion) and is loaded into Criterion.automation_method by scoring_engine.py. It is not yet consumed anywhere downstream to change scoring behavior (e.g. routing 'model' criteria differently from 'rule' criteria) - that wiring is still open, tracked here so it isn't assumed done just because the field is populated and loaded.",
+        "expected_behavior_raw/unacceptable_behavior_raw carry the full behavior text per criterion, but are NOT split into per-channel fields - see the field description on expected_behavior_raw for why an automatic split was rejected. A manual pass is needed if per-channel behavior text is required later.",
+        "Score output must always be emitted as a number, including on override paths. Spreadsheet scorecards often return a formatted string for overrides and a number otherwise; downstream consumers must not inherit that."
+      ]
+    }
+  }
+}
