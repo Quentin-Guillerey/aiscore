@@ -1,6 +1,6 @@
 # AISCORE service
 
-[![CI](https://github.com/Quentin-Guillerey/aiscore/actions/workflows/ci.yml/badge.svg)](https://github.com/Quentin-Guillerey/aiscore/actions/workflows/ci.yml)
+[![CI](https://github.com/Quentin-Guillerey/AISCORE/actions/workflows/ci.yml/badge.svg)](https://github.com/Quentin-Guillerey/AISCORE/actions/workflows/ci.yml)
 
 FastAPI service for scoring contact-centre QA evaluations. Postgres for the
 normal deployment, SQLite for the standalone build. Prototype stage:
