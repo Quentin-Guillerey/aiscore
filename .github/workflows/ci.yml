@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Import check
+        env:
+          DATABASE_URL: sqlite:///ci_check.db
+        run: python -c "import app.main; print('app.main imports cleanly')"
+
+      - name: Every test file is actually collected
+        env:
+          DATABASE_URL: sqlite:///ci_check.db
+        run: |
+          python - <<'PY'
+          import pathlib, subprocess, sys
+          on_disk = {p.name for p in pathlib.Path("tests").glob("*.py")
+                     if p.name not in ("__init__.py", "conftest.py")}
+          out = subprocess.run([sys.executable, "-m", "pytest", "tests/", "--collect-only", "-q"],
+                               capture_output=True, text=True).stdout
+          collected = {line.split("::")[0].split("/")[-1]
+                       for line in out.splitlines() if "::" in line}
+          missed = on_disk - collected
+          if missed:
+              sys.exit(f"NOT COLLECTED by pytest: {sorted(missed)}\n"
+                       f"Check the filename matches test_*.py (spaces and typos are the usual cause).")
+          print(f"all {len(on_disk)} test files collected: {sorted(on_disk)}")
+          PY
+
+      - name: Tests
+        env:
+          DATABASE_URL: sqlite:///ci_check.db
+        run: python -m pytest tests/ -v --strict-markers -p no:cacheprovider
+
+      - name: No warnings
+        env:
+          DATABASE_URL: sqlite:///ci_check.db
+        run: python -m pytest tests/ -q -W error -p no:cacheprovider
+
+      - name: Test count floor
+        env:
+          DATABASE_URL: sqlite:///ci_check.db
+          MIN: "50"
+        run: |
+          python - <<'PY'
+          import os, re, subprocess, sys
+          out = subprocess.run([sys.executable, "-m", "pytest", "tests/", "--collect-only", "-q"],
+                               capture_output=True, text=True).stdout
+          m = re.search(r"(\d+)\s+tests? collected", out)
+          n = int(m.group(1)) if m else 0
+          floor = int(os.environ["MIN"])
+          print(f"collected {n}, floor {floor}")
+          if n < floor:
+              sys.exit(f"test count dropped below the floor ({n} < {floor})")
+          PY
+
+      - name: Docker build
+        run: docker build -t aiscore:ci .
